@@ -91,9 +91,18 @@ def main(argv=sys.argv):
         log.info('Completed applying salt state %s' % state_file)
         stdout = ret
     else:
-        log.error('Error applying Salt state %s. [%s]\n'
+        runFailed = False
+        for saltState, saltStateData in ret['return'].items():
+            if not saltTaskData['result']:
+                runFailed = True
+        if not runFailed:
+            log.info('Completed applying salt state %s' % state_file)
+            ret['retcode'] = 0
+            stdout = ret
+        else:
+            log.error('Error applying Salt state %s. [%s]\n'
                   % (state_file, ret['retcode']))
-        stderr = ret
+            stderr = ret
 
     response = {}
 
